@@ -385,13 +385,61 @@ header {
     flex-wrap: wrap;
 }
 
-/* Estilos de Impresión */
+/* Estilos de Impresión y Exportación */
 @media print {
     body * { visibility: hidden; }
     #diplomaModal, #diplomaElement, #diplomaElement * { visibility: visible; }
     #diplomaModal { position: absolute; left: 0; top: 0; width: 100%; }
     .no-print { display: none !important; }
     .diploma-content { box-shadow: none; }
+}
+
+/* Modo exportación horizontal forzado para html2canvas */
+.landscape-export {
+    width: 1000px !important;
+    max-width: 1000px !important;
+    height: 700px !important;
+    background: #25005e !important;
+    background-image: linear-gradient(160deg, #320073 0%, #1a004a 50%, #0a0025 100%) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.landscape-export .diploma-border {
+    width: 900px;
+    height: 600px;
+    background: #1e0040 !important; /* Color sólido vibrante para evitar oscurecimiento */
+    border: 8px solid #ffcc00 !important;
+    box-shadow: none !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.landscape-export h1 {
+    font-size: 3.5rem !important;
+    color: #ffcc00 !important;
+    text-shadow: 3px 3px 0 #000 !important; /* Sombras simples que html2canvas maneja bien */
+}
+
+.landscape-export .diploma-name {
+    font-size: 4rem !important;
+    color: #ffffff !important;
+    text-shadow: 3px 3px 0 #000 !important;
+}
+
+.landscape-export .diploma-score {
+    font-size: 2.5rem !important;
+    color: #ffcc00 !important;
+}
+
+.landscape-export .score-breakdown {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 2px solid #a03cff !important;
 }
 
 .score-breakdown {
