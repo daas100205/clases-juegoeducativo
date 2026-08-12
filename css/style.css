@@ -324,7 +324,7 @@ header {
     color: #ffcc00;
     font-size: 2rem;
     margin-bottom: 6px;
-    text-shadow: 0 0 20px rgba(255,200,0,0.9), 0 0 40px rgba(255,150,0,0.5);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 
 .diploma-border h2 {
@@ -346,7 +346,7 @@ header {
     margin: 16px 0;
     text-transform: uppercase;
     font-family: 'Fredoka', sans-serif;
-    text-shadow: 0 0 20px rgba(180,80,255,1), 0 0 40px rgba(120,40,200,0.8), 0 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
     letter-spacing: 2px;
 }
 
@@ -354,7 +354,7 @@ header {
     font-size: 1.8rem;
     color: #ffcc00;
     margin: 14px 0;
-    text-shadow: 0 0 18px rgba(255,200,0,0.9), 0 0 35px rgba(255,140,0,0.6);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 
 .diploma-footer {
