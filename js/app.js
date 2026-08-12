@@ -203,9 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Copiamos todo el contenido del diploma (menos botones/inputs)
             exportWrapper.innerHTML = `
                 <div class="diploma-border">
-                    <div class="diploma-stars">⭐ ⭐ ⭐ ⭐</div>
-                    <h1>🏆 DIPLOMA DE EXCELENCIA 🏆</h1>
-                    <img class="diploma-photo" src="${photo ? photo.src : ''}">
+                    <h1 style="margin-top:0;">🏆 DIPLOMA DE EXCELENCIA 🏆</h1>
+                    <div class="diploma-photo-bg" style="background-image: url('${photo ? photo.src : ''}');"></div>
                     <hr style="border-color: #ffcc00; margin: 15px 0; width: 60%;">
                     <p style="color:#fff; font-size:18px;">Se otorga el presente diploma al estudiante:</p>
                     <h3 class="diploma-name">${name}</h3>
