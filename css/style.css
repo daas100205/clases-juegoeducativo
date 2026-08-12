@@ -449,6 +449,8 @@ header {
 #exportWrapper .diploma-photo-bg {
     width: 130px;
     height: 130px;
+    min-width: 130px;
+    min-height: 130px;
     border-radius: 50%;
     border: 4px solid #ffcc00;
     background-size: cover;
@@ -456,6 +458,7 @@ header {
     background-repeat: no-repeat;
     background-color: #1a0033;
     margin: 10px 0;
+    flex-shrink: 0; /* Evita que flexbox aplaste el div convirtiéndolo en óvalo */
 }
 
 #exportWrapper .diploma-footer {
