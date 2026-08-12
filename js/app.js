@@ -197,8 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 seal.src = await toBase64(seal.src);
             }
 
-            // Añadir clase para exportación horizontal
-            element.classList.add('landscape-export');
+            // Se removió landscape-export para mantener el formato vertical original
 
             html2canvas(element, {
                 backgroundColor: '#12003a',
@@ -215,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.click();
 
                 // Restaurar todo
-                element.classList.remove('landscape-export');
                 if (photo && originalPhotoSrc) photo.src = originalPhotoSrc;
                 sealImgs.forEach((seal, i) => { seal.src = originalSealSrcs[i]; });
                 if (picker)  picker.style.display  = '';
@@ -223,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 printBtn.disabled = false;
                 printBtn.innerHTML = '<i class="fa-solid fa-download"></i> Descargar Diploma';
             }).catch(() => {
-                element.classList.remove('landscape-export');
                 if (photo && originalPhotoSrc) photo.src = originalPhotoSrc;
                 sealImgs.forEach((seal, i) => { seal.src = originalSealSrcs[i]; });
                 if (picker)  picker.style.display  = '';
