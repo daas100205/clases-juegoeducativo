@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planeta de la Memoria 🃏</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3069/3069172.png" type="image/png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7b2cbf;
+            --secondary: #ff9e00;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: radial-gradient(ellipse at 20% 30%, rgba(123, 44, 191, 0.4) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 70%, rgba(0, 80, 200, 0.3) 0%, transparent 55%),
+                #0a001a;
+            color: white;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 22px;
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 9px 18px;
+            font-size: 0.95rem;
+            font-family: 'Fredoka', sans-serif;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .pts-badge {
+            background: rgba(255, 158, 0, 0.2);
+            border: 1px solid var(--secondary);
+            border-radius: 30px;
+            padding: 8px 18px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            color: var(--secondary);
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #d4aaff, #ffcc80);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 18px;
+        }
+
+        .stat strong {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.4rem;
+            color: var(--secondary);
+            display: block;
+        }
+
+        .stat span {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Grid de cartas */
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 0 auto;
+            max-width: 480px;
+        }
+
+        .card {
+            aspect-ratio: 3/4;
+            perspective: 800px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.55s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flip .card-inner,
+        .card.match .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1.6rem, 5vw, 2.5rem);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, rgba(123, 44, 191, 0.85), rgba(60, 50, 180, 0.85));
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1.5rem;
+        }
+
+        .card-back {
+            background: rgba(255, 255, 255, 0.95);
+            transform: rotateY(180deg);
+        }
+
+        .card.match .card-back {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-color: #27ae60;
+        }
+
+        .card.shake .card-inner {
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: rotateY(180deg);
+            }
+
+            25% {
+                transform: rotateY(160deg);
+            }
+
+            75% {
+                transform: rotateY(200deg);
+            }
+        }
+
+        /* Win banner */
+        #winBanner {
+            display: none;
+            margin-top: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            color: #2ecc71;
+        }
+
+        #winBanner.show {
+            display: block;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .btn-again {
+            margin-top: 14px;
+            padding: 12px 28px;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(135deg, #7b2cbf, #5c35d4);
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-again:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 380px) {
+            #grid {
+                gap: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="topbar">
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Base Espacial</a>
+            <div class="pts-badge">⭐ <span id="pts">0</span> pts</div>
+        </div>
+
+        <h1>🃏 Planeta Memoria</h1>
+        <p class="subtitle">Encuentra los 8 pares de cartas espaciales.</p>
+
+        <div class="stat-row">
+            <div class="stat"><strong id="sMoves">0</strong><span>Movimientos</span></div>
+            <div class="stat"><strong id="sPairs">0/8</strong><span>Pares</span></div>
+        </div>
+
+        <div id="grid"></div>
+
+        <div id="winBanner">
+            ¡Memoria perfecta! +50 Puntos
+            <br>
+            <button class="btn-again" onclick="startGame()">
+                <i class="fa-solid fa-rotate-right"></i> Jugar Otra Vez
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function getScore() {
+            try { return Object.values(JSON.parse(sessionStorage.getItem('astronautScores') || '{}')).reduce((a, b) => a + b, 0); }
+            catch (e) { return 0; }
+        }
+        function addPoints(pts) {
+            try {
+                const s = JSON.parse(sessionStorage.getItem('astronautScores') || '{}');
+                s.memoria = (s.memoria || 0) + pts;
+                sessionStorage.setItem('astronautScores', JSON.stringify(s));
+                document.getElementById('pts').textContent = getScore();
+            } catch (e) { }
+        }
+        document.getElementById('pts').textContent = getScore();
+
+        const EMOJIS = ['🚀', '🛸', '🌍', '🌕', '☀️', '⭐', '☄️', '🛰️'];
+
+        let first = null, second = null, locked = false;
+        let moves = 0, pairs = 0;
+
+        function startGame() {
+            moves = 0; pairs = 0; first = null; second = null; locked = false;
+            document.getElementById('sMoves').textContent = 0;
+            document.getElementById('sPairs').textContent = '0/8';
+            document.getElementById('winBanner').classList.remove('show');
+
+            const cards = shuffle([...EMOJIS, ...EMOJIS]);
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            cards.forEach(emoji => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.val = emoji;
+                card.innerHTML = `
+            <div class="card-inner">
+                <div class="card-front">🌌</div>
+                <div class="card-back">${emoji}</div>
+            </div>`;
+                card.addEventListener('click', () => flip(card));
+                grid.appendChild(card);
+            });
+        }
+
+        function flip(card) {
+            if (locked || card.classList.contains('flip') || card.classList.contains('match')) return;
+
+            card.classList.add('flip');
+
+            if (!first) { first = card; return; }
+
+            second = card;
+            moves++;
+            document.getElementById('sMoves').textContent = moves;
+
+            if (first.dataset.val === second.dataset.val) {
+                first.classList.add('match');
+                second.classList.add('match');
+                pairs++;
+                document.getElementById('sPairs').textContent = `${pairs}/8`;
+                first = second = null;
+                if (pairs === 8) setTimeout(win, 400);
+            } else {
+                locked = true;
+                const a = first, b = second;
+                setTimeout(() => {
+                    a.classList.remove('flip');
+                    b.classList.remove('flip');
+                    first = second = null;
+                    locked = false;
+                }, 900);
+            }
+        }
+
+        function win() {
+            document.getElementById('winBanner').classList.add('show');
+            addPoints(50);
+        }
+
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        startGame();
+    </script>
+</body>
+
+</html>

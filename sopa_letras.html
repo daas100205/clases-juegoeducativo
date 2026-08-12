@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planeta de las Palabras - Sopa de Letras</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3069/3069172.png" type="image/png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(123, 44, 191, 0.35) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(0, 80, 200, 0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 50%, rgba(10, 0, 30, 1) 0%, #0a001a 100%);
+        }
+
+        .game-wrapper {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-3px);
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Tablero */
+        .board-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(123, 44, 191, 0.4);
+            display: inline-block;
+        }
+
+        .board {
+            display: grid;
+            gap: 2px;
+            user-select: none;
+        }
+
+        .cell {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            color: white;
+            cursor: pointer;
+            transition: all 0.15s;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .cell.selected {
+            background: var(--secondary-color);
+            color: #0a001a;
+            border-color: transparent;
+        }
+
+        .cell.found {
+            background: #2ecc71;
+            color: #0a001a;
+            border-color: transparent;
+            animation: pop 0.3s;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Lista de palabras */
+        .words-panel {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px 25px;
+            border-radius: 15px;
+            min-width: 200px;
+            max-width: 220px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .words-panel h3 {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 8px;
+        }
+
+        .words-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .words-list li {
+            font-size: 1.05rem;
+            margin-bottom: 10px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            letter-spacing: 1px;
+        }
+
+        .words-list li.found-word {
+            text-decoration: line-through;
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.15);
+            border-color: rgba(46, 204, 113, 0.3);
+        }
+
+        /* Indicador de progreso */
+        .progress-wrap {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .win-message {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            .cell {
+                width: 28px;
+                height: 28px;
+                font-size: 0.95rem;
+            }
+
+            .words-panel {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-wrapper glass-panel">
+        <div class="top-bar">
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Base Espacial</a>
+            <div class="points-badge">⭐ <span id="gameScore" class="score-number">0</span> pts</div>
+        </div>
+
+        <h1 class="title-glow" style="font-size:2rem; margin-bottom: 5px;" id="sopaTitle">Campo de Asteroides</h1>
+        <p style="color:rgba(255,255,255,0.6); text-align:center;">Haz clic en la primera letra y arrastra hasta la
+            última para seleccionar.</p>
+
+        <div class="content-wrapper">
+            <div class="board-container">
+                <div id="board" class="board"></div>
+            </div>
+
+            <div class="words-panel">
+                <h3> Encuentra:</h3>
+                <ul id="wordsList" class="words-list"></ul>
+                <div class="progress-wrap">
+                    <p class="progress-label">Progreso: <span id="foundCount">0</span> / <span id="totalCount">5</span>
+                    </p>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="winMessage" class="win-message win-message">
+            ¡Encontraste todas las palabras! +50 Puntos
+            <br>
+            <button class="btn-primary" style="margin-top: 15px;" onclick="location.reload()">
+                <i class="fa-solid fa-rotate-right"></i> Jugar Otra
+            </button>
+            <a href="index.html" class="btn-secondary"
+                style="display:inline-block; margin-top:10px; text-decoration:none;">
+                <i class="fa-solid fa-house"></i> Volver a la Base
+            </a>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/sopa_letras.js"></script>
+</body>
+
+</html>

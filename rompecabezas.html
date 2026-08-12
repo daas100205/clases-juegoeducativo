@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rompecabezas Espacial 🧩</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3069/3069172.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #7b2cbf;
+            --secondary: #ff9e00;
+            --bg: #0a001a;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: radial-gradient(ellipse at 20% 30%, rgba(123,44,191,0.4) 0%, transparent 55%),
+                        radial-gradient(ellipse at 80% 70%, rgba(0,80,200,0.3) 0%, transparent 55%),
+                        #0a001a;
+            color: white;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        /* Wrapper principal */
+        .wrapper {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 22px;
+            padding: 24px 20px;
+        }
+
+        /* Top bar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 30px;
+            padding: 9px 18px;
+            font-size: 0.95rem;
+            font-family: 'Fredoka', sans-serif;
+            transition: background 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .pts-badge {
+            background: rgba(255,158,0,0.2);
+            border: 1px solid var(--secondary);
+            border-radius: 30px;
+            padding: 8px 18px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            color: var(--secondary);
+        }
+
+        /* Títulos */
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #d4aaff, #ffcc80);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.55);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        /* ---------- Pantalla 1: Selección ---------- */
+        #selectScreen { display: block; }
+        #gameScreen   { display: none; }
+
+        .section-title {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin: 18px 0 10px;
+            text-align: center;
+        }
+
+        /* Upload buttons */
+        .upload-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+        .upload-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.08);
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 14px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            transition: all 0.2s;
+            color: white;
+        }
+        .upload-label:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: var(--secondary);
+        }
+        .upload-label i { color: var(--secondary); font-size: 1.3rem; }
+
+        /* Preview de imagen seleccionada */
+        #previewBox {
+            display: none;
+            text-align: center;
+            margin: 12px 0;
+        }
+        #previewBox img {
+            max-width: 180px;
+            max-height: 130px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 3px solid #2ecc71;
+            box-shadow: 0 0 14px rgba(46,204,113,0.5);
+        }
+        #previewBox p {
+            color: #2ecc71;
+            font-family: 'Fredoka', sans-serif;
+            margin-top: 6px;
+            font-size: 1rem;
+        }
+
+        /* Galería preset */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+        @media (max-width: 400px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+
+        .gallery-item {
+            position: relative;
+            cursor: pointer;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            aspect-ratio: 4/3;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-item .lbl {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.55);
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 3px;
+            font-family: 'Fredoka', sans-serif;
+        }
+        .gallery-item.chosen { border-color: #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.6); }
+        .gallery-item:hover  { border-color: var(--secondary); transform: scale(1.03); }
+
+        /* Dificultad */
+        .diff-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 14px 0;
+        }
+        .diff-btn {
+            padding: 9px 20px;
+            border-radius: 30px;
+            border: 2px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.07);
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .diff-btn.active, .diff-btn:hover {
+            border-color: var(--secondary);
+            background: rgba(255,158,0,0.15);
+            color: var(--secondary);
+        }
+
+        /* Botón iniciar */
+        .start-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(135deg, #7b2cbf, #5c35d4);
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+        .start-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(123,44,191,0.5); }
+        .start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        #hint {
+            text-align: center;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 8px;
+        }
+
+        /* ---------- Pantalla 2: Juego ---------- */
+        .game-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+        .stat { text-align: center; }
+        .stat strong { font-family: 'Fredoka', sans-serif; font-size: 1.4rem; color: var(--secondary); display: block; }
+        .stat span   { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+
+        /* Layout tablero + piezas en móvil: vertical */
+        .puzzle-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .ref-img {
+            width: 90px;
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.25);
+            opacity: 0.85;
+        }
+        .ref-label { font-size: 0.75rem; color: rgba(255,255,255,0.45); text-align: center; margin-bottom: 4px; }
+
+        /* Tablero */
+        #board {
+            display: grid;
+            border: 3px solid rgba(123,44,191,0.7);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .slot {
+            background: rgba(255,255,255,0.04);
+            border: 1px dashed rgba(255,255,255,0.12);
+            position: relative;
+            transition: background 0.15s;
+        }
+        .slot.over    { background: rgba(255,158,0,0.22); }
+        .slot.correct { border: 1px solid #2ecc71; }
+
+        /* Número de ayuda */
+        .piece-num {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-family: 'Fredoka', sans-serif;
+            color: white;
+            text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .show-help .piece-num { opacity: 1; }
+
+        /* Piezas */
+        .piece {
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: transform 0.15s, box-shadow 0.15s;
+            background-repeat: no-repeat;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        .piece:active { transform: scale(0.95); }
+        .piece:hover  { transform: scale(1.05); box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+        .piece.placed { border-color: #2ecc71; cursor: default; pointer-events: none; }
+
+        /* Win */
+        #winBanner {
+            display: none;
+            text-align: center;
+            margin-top: 18px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            color: #2ecc71;
+            animation: popIn 0.5s ease;
+        }
+        #winBanner.show { display: block; }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .btn-again {
+            margin-top: 12px;
+            padding: 12px 26px;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(135deg, #7b2cbf, #5c35d4);
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-again:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Base Espacial</a>
+        <div class="pts-badge">⭐ <span id="pts">0</span> pts</div>
+    </div>
+
+    <!-- ==================== PANTALLA 1 ==================== -->
+    <div id="selectScreen">
+        <h1>🧩 Rompecabezas</h1>
+        <p class="subtitle">Elige una imagen o sube la tuya, ¡y arma el rompecabezas!</p>
+
+        <p class="section-title">📸 Sube tu imagen o toma foto:</p>
+        <div class="upload-row">
+            <label class="upload-label" for="fileInput">
+                <i class="fa-solid fa-image"></i> Seleccionar imagen
+            </label>
+            <label class="upload-label" for="cameraInput">
+                <i class="fa-solid fa-camera"></i> Tomar foto
+            </label>
+            <input type="file" id="fileInput"   accept="image/*" style="display:none">
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
+        </div>
+
+        <!-- Preview de imagen subida -->
+        <div id="previewBox">
+            <img id="previewImg" src="" alt="Vista previa">
+            <p>✅ Imagen seleccionada</p>
+        </div>
+
+        <p class="section-title">🖼️ O elige una imagen de la galería:</p>
+        <div class="gallery" id="gallery"></div>
+
+        <p class="section-title">⚙️ Dificultad:</p>
+        <div class="diff-row">
+            <button class="diff-btn active" data-grid="3">😊 Fácil 3×3</button>
+            <button class="diff-btn" data-grid="4">🤔 Normal 4×4</button>
+            <button class="diff-btn" data-grid="5">😤 Difícil 5×5</button>
+        </div>
+
+        <button class="start-btn" id="startBtn" disabled>
+            <i class="fa-solid fa-play"></i> ¡Iniciar Rompecabezas!
+        </button>
+        <p id="hint">Selecciona o sube una imagen primero</p>
+    </div>
+
+    <!-- ==================== PANTALLA 2 ==================== -->
+    <div id="gameScreen">
+
+        <div style="text-align:center; margin-bottom: 12px;">
+            <button id="helpBtn" class="btn-secondary" style="padding: 8px 16px; font-size: 0.9rem; border-radius:30px;">
+                <i class="fa-solid fa-lightbulb"></i> Ayuda (Quedan <span id="helpCount">2</span>)
+            </button>
+        </div>
+
+        <div class="stat-row">
+            <div class="stat"><strong id="sMoves">0</strong><span>Movimientos</span></div>
+            <div class="stat"><strong id="sPlaced">0</strong><span>Colocadas</span></div>
+            <div class="stat"><strong id="sTotal">9</strong><span>Total</span></div>
+        </div>
+
+        <div class="puzzle-area">
+            <div id="board"></div>
+        </div>
+
+        <div id="winBanner">
+            🎉 ¡Completado! +60 Puntos ⭐
+            <br>
+            <button class="btn-again" id="playAgainBtn">
+                <i class="fa-solid fa-rotate-right"></i> Jugar Otra Vez
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Leer/escribir puntos de sessionStorage
+function getScore() {
+    try {
+        const s = JSON.parse(sessionStorage.getItem('astronautScores') || '{}');
+        return Object.values(s).reduce((a,b)=>a+b,0);
+    } catch(e){ return 0; }
+}
+function addPoints(pts) {
+    try {
+        const s = JSON.parse(sessionStorage.getItem('astronautScores') || '{}');
+        s.rompecabezas = (s.rompecabezas || 0) + pts;
+        sessionStorage.setItem('astronautScores', JSON.stringify(s));
+        document.getElementById('pts').textContent = getScore();
+    } catch(e){}
+}
+document.getElementById('pts').textContent = getScore();
+
+// Redirigir si no hay nombre (opcional, no bloquea)
+// if (!sessionStorage.getItem('astronautName')) window.location.href = 'index.html';
+
+// ---- Variables Globales ----
+const imageSources = [
+    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600',
+    'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=600',
+    'https://images.unsplash.com/photo-1541873676-a18131494184?w=600'
+];
+
+let selectedSrc = null;
+let gridN = 3;
+let moves = 0;
+let placed = 0;
+let helpsLeft = 2; // Usos de ayuda
+
+// ---- Init ----
+const PRESETS = [
+    { url: 'https://picsum.photos/seed/space1/600/400', label: '🌌 Galaxia' },
+    { url: 'https://picsum.photos/seed/nature5/600/400', label: '🌿 Naturaleza' },
+    { url: 'https://picsum.photos/seed/cat2/600/400', label: '🐱 Animalito' },
+    { url: 'https://picsum.photos/seed/city8/600/400', label: '🏙️ Ciudad' },
+    { url: 'https://picsum.photos/seed/ocean3/600/400', label: '🌊 Océano' },
+    { url: 'https://picsum.photos/seed/mountain1/600/400', label: '⛰️ Montaña' },
+];
+
+let dragPiece = null, touchPiece = null, ghostEl = null;
+
+// Construir galería
+const galleryEl = document.getElementById('gallery');
+PRESETS.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.innerHTML = `<img src="${p.url}" alt="${p.label}" loading="lazy"><div class="lbl">${p.label}</div>`;
+    item.addEventListener('click', () => {
+        document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('chosen'));
+        item.classList.add('chosen');
+        // Esconder preview de upload
+        document.getElementById('previewBox').style.display = 'none';
+        selectSrc(p.url);
+    });
+    galleryEl.appendChild(item);
+});
+
+function selectSrc(src) {
+    selectedSrc = src;
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('hint').textContent = '✅ Listo. Elige la dificultad y presiona ¡Iniciar!';
+    document.getElementById('hint').style.color = '#2ecc71';
+}
+
+// Upload / cámara
+['fileInput','cameraInput'].forEach(id => {
+    document.getElementById(id).addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('chosen'));
+            const preview = document.getElementById('previewBox');
+            document.getElementById('previewImg').src = ev.target.result;
+            preview.style.display = 'block';
+            selectSrc(ev.target.result);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+
+// Dificultad
+document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        gridN = parseInt(btn.dataset.grid);
+    });
+});
+
+// Iniciar
+document.getElementById('startBtn').addEventListener('click', () => {
+    if (!selectedSrc) return;
+    buildPuzzle(selectedSrc, gridN);
+});
+
+document.getElementById('playAgainBtn').addEventListener('click', () => {
+    buildPuzzle(selectedSrc, gridN);
+});
+
+// Ayuda
+document.getElementById('helpBtn').addEventListener('click', () => {
+    if (helpsLeft > 0) {
+        helpsLeft--;
+        document.getElementById('helpCount').textContent = helpsLeft;
+        const board = document.getElementById('board');
+        board.classList.add('show-help');
+        
+        const btn = document.getElementById('helpBtn');
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        
+        setTimeout(() => {
+            board.classList.remove('show-help');
+            if (helpsLeft > 0) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            } else {
+                btn.innerHTML = 'Sin ayudas';
+            }
+        }, 3000);
+    }
+});
+
+// ---- Construir el rompecabezas ----
+function buildPuzzle(src, n) {
+    moves = 0; placed = 0; helpsLeft = 2;
+    
+    const hBtn = document.getElementById('helpBtn');
+    hBtn.disabled = false;
+    hBtn.style.opacity = '1';
+    hBtn.innerHTML = '<i class="fa-solid fa-lightbulb"></i> Ayuda (Quedan <span id="helpCount">2</span>)';
+
+    document.getElementById('winBanner').classList.remove('show');
+    document.getElementById('sMoves').textContent = 0;
+    document.getElementById('sPlaced').textContent = 0;
+    document.getElementById('sTotal').textContent = n * n;
+
+
+    document.getElementById('selectScreen').style.display = 'none';
+    document.getElementById('gameScreen').style.display = 'block';
+
+    // Tamaño responsivo
+    const wrapperW = document.querySelector('.wrapper').clientWidth - 40;
+    const maxBoard = Math.min(wrapperW, 500);
+    const pieceSize = Math.floor(maxBoard / n);
+    const boardPx = pieceSize * n;
+
+    const board = document.getElementById('board');
+    board.innerHTML = '';
+
+    board.style.display = 'block'; // override grid
+    board.style.position = 'relative';
+    board.style.width  = boardPx + 'px';
+    board.style.height = boardPx + 'px';
+    board.style.border = '3px solid rgba(123,44,191,0.7)';
+    board.style.borderRadius = '10px';
+    board.style.overflow = 'hidden';
+
+    // Generar estado mezclado válido (para que siempre tenga solución)
+    let state = [...Array(n*n).keys()];
+    let emptyPos = n*n - 1; // La última pieza es el hueco
+
+    // Mezclar simulando movimientos válidos
+    const shuffleMoves = n * n * 20;
+    for(let k = 0; k < shuffleMoves; k++) {
+        const validMoves = [];
+        const r = Math.floor(emptyPos / n);
+        const c = emptyPos % n;
+        if (r > 0) validMoves.push(emptyPos - n); // arriba
+        if (r < n - 1) validMoves.push(emptyPos + n); // abajo
+        if (c > 0) validMoves.push(emptyPos - 1); // izq
+        if (c < n - 1) validMoves.push(emptyPos + 1); // der
+        
+        const move = validMoves[Math.floor(Math.random() * validMoves.length)];
+        [state[emptyPos], state[move]] = [state[move], state[emptyPos]];
+        emptyPos = move;
+    }
+
+    // Array para guardar referencias a las piezas
+    const piecesElements = [];
+
+    // Crear las piezas en el DOM
+    for (let i = 0; i < n*n; i++) {
+        const pieceIdx = state[i]; // Qué pieza de la imagen va en la posición i
+        
+        const row = Math.floor(i / n);
+        const col = i % n;
+
+        const piece = document.createElement('div');
+        piece.style.position = 'absolute';
+        piece.style.width  = pieceSize + 'px';
+        piece.style.height = pieceSize + 'px';
+        piece.style.transition = 'all 0.2s ease-in-out';
+        piece.style.left = (col * pieceSize) + 'px';
+        piece.style.top = (row * pieceSize) + 'px';
+        piece.dataset.currentPos = i;
+        piece.dataset.correctPos = pieceIdx;
+
+        if (pieceIdx === n*n - 1) {
+            // El hueco
+            piece.classList.add('empty-piece');
+            piece.style.background = 'rgba(0,0,0,0.5)';
+            piece.style.zIndex = 1;
+        } else {
+            // Pieza normal con imagen
+            piece.className = 'piece';
+            const imgRow = Math.floor(pieceIdx / n);
+            const imgCol = pieceIdx % n;
+            const bgX = -(imgCol * pieceSize);
+            const bgY = -(imgRow * pieceSize);
+
+            piece.style.backgroundImage    = `url('${src}')`;
+            piece.style.backgroundSize     = `${boardPx}px ${boardPx}px`;
+            piece.style.backgroundPosition = `${bgX}px ${bgY}px`;
+            piece.style.border = '1px solid rgba(255,255,255,0.2)';
+            piece.style.cursor = 'pointer';
+            piece.style.zIndex = 2;
+            
+            // Número para ayuda
+            const numSpan = document.createElement('span');
+            numSpan.className = 'piece-num';
+            numSpan.textContent = pieceIdx + 1;
+            piece.appendChild(numSpan);
+
+            // Click para deslizar
+            piece.addEventListener('click', () => {
+                handleSlide(piece, n, pieceSize);
+            });
+        }
+
+        board.appendChild(piece);
+        piecesElements.push(piece);
+    }
+
+    checkWin(); // Por si de milagro se armó solo
+}
+
+function handleSlide(piece, n, pieceSize) {
+    const board = document.getElementById('board');
+    const emptyPiece = board.querySelector('.empty-piece');
+    if (!emptyPiece) return;
+
+    const currentPos = parseInt(piece.dataset.currentPos);
+    const emptyPos   = parseInt(emptyPiece.dataset.currentPos);
+
+    const r1 = Math.floor(currentPos / n);
+    const c1 = currentPos % n;
+    const r2 = Math.floor(emptyPos / n);
+    const c2 = emptyPos % n;
+
+    // Verificar si están en la misma fila o columna
+    const isSameRow = (r1 === r2);
+    const isSameCol = (c1 === c2);
+
+    if (isSameRow || isSameCol) {
+        const boardPieces = Array.from(board.querySelectorAll('.piece, .empty-piece'));
+        const piecesToMove = [];
+
+        if (isSameRow) {
+            const minC = Math.min(c1, c2);
+            const maxC = Math.max(c1, c2);
+            boardPieces.forEach(p => {
+                const pos = parseInt(p.dataset.currentPos);
+                const pR = Math.floor(pos / n);
+                const pC = pos % n;
+                if (pR === r1 && pC >= minC && pC <= maxC && p !== emptyPiece) {
+                    piecesToMove.push(p);
+                }
+            });
+            const dir = c1 < c2 ? 1 : -1;
+            piecesToMove.forEach(p => {
+                const oldC = parseInt(p.dataset.currentPos) % n;
+                p.dataset.currentPos = parseInt(p.dataset.currentPos) + dir;
+                p.style.left = ((oldC + dir) * pieceSize) + 'px';
+            });
+            emptyPiece.dataset.currentPos = currentPos;
+            emptyPiece.style.left = (c1 * pieceSize) + 'px';
+        } else {
+            const minR = Math.min(r1, r2);
+            const maxR = Math.max(r1, r2);
+            boardPieces.forEach(p => {
+                const pos = parseInt(p.dataset.currentPos);
+                const pR = Math.floor(pos / n);
+                const pC = pos % n;
+                if (pC === c1 && pR >= minR && pR <= maxR && p !== emptyPiece) {
+                    piecesToMove.push(p);
+                }
+            });
+            const dir = r1 < r2 ? n : -n;
+            piecesToMove.forEach(p => {
+                const oldR = Math.floor(parseInt(p.dataset.currentPos) / n);
+                p.dataset.currentPos = parseInt(p.dataset.currentPos) + dir;
+                p.style.top = ((oldR + Math.sign(dir)) * pieceSize) + 'px';
+            });
+            emptyPiece.dataset.currentPos = currentPos;
+            emptyPiece.style.top = (r1 * pieceSize) + 'px';
+        }
+
+        moves++;
+        document.getElementById('sMoves').textContent = moves;
+
+        setTimeout(checkWin, 250); // Revisar victoria después de la animación
+    }
+}
+
+function checkWin() {
+    let correctCount = 0;
+    const pieces = document.querySelectorAll('#board > div');
+    const totalPieces = pieces.length;
+
+    pieces.forEach(p => {
+        const current = parseInt(p.dataset.currentPos);
+        const correct = parseInt(p.dataset.correctPos);
+        if (current === correct) {
+            correctCount++;
+            if (p.classList.contains('piece')) {
+                p.style.borderColor = '#2ecc71';
+                p.style.boxShadow = 'inset 0 0 10px rgba(46,204,113,0.3)';
+            }
+        } else {
+            if (p.classList.contains('piece')) {
+                p.style.borderColor = 'rgba(255,255,255,0.2)';
+                p.style.boxShadow = 'none';
+            }
+        }
+    });
+
+    // Descontar la pieza vacía para sPlaced
+    document.getElementById('sPlaced').textContent = (correctCount === totalPieces) ? totalPieces : Math.max(0, correctCount - 1);
+
+    if (correctCount === totalPieces) {
+        // Victoria!
+        document.getElementById('winBanner').classList.add('show');
+        addPoints(60);
+        // Desactivar clicks
+        document.querySelectorAll('.piece').forEach(p => {
+            p.style.pointerEvents = 'none';
+            p.style.border = 'none';
+            p.style.boxShadow = 'none';
+        });
+        // Llenar la pieza vacía con el pedazo de imagen que faltaba
+        const emptyPiece = document.querySelector('.empty-piece');
+        if (emptyPiece) {
+            const pieceSize = parseInt(emptyPiece.style.width);
+            const n = Math.sqrt(totalPieces);
+            const imgRow = Math.floor((totalPieces - 1) / n);
+            const imgCol = (totalPieces - 1) % n;
+            emptyPiece.style.background = document.querySelector('.piece').style.backgroundImage;
+            emptyPiece.style.backgroundSize = document.querySelector('.piece').style.backgroundSize;
+            emptyPiece.style.backgroundPosition = `-${imgCol * pieceSize}px -${imgRow * pieceSize}px`;
+        }
+    }
+}
+</script>
+</body>
+</html>
