@@ -197,29 +197,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 seal.src = await toBase64(seal.src);
             }
 
-            // Añadir clase para exportación horizontal con colores sólidos
-            element.classList.add('landscape-export');
+            // Crear un contenedor clonado fuera de la pantalla para garantizar 1000x700 en celulares
+            const exportWrapper = document.createElement('div');
+            exportWrapper.id = 'exportWrapper';
+            // Copiamos todo el contenido del diploma (menos botones/inputs)
+            exportWrapper.innerHTML = `
+                <div class="diploma-border">
+                    <div class="diploma-stars">⭐ ⭐ ⭐ ⭐</div>
+                    <h1>🏆 DIPLOMA DE EXCELENCIA 🏆</h1>
+                    <img class="diploma-photo" src="${photo ? photo.src : ''}">
+                    <hr style="border-color: #ffcc00; margin: 15px 0; width: 60%;">
+                    <p style="color:#fff; font-size:18px;">Se otorga el presente diploma al estudiante:</p>
+                    <h3 class="diploma-name">${name}</h3>
+                    <p style="color:#fff; font-size:18px;">Por su valentía y conocimiento al acumular un total de:</p>
+                    <h4 class="diploma-score">${document.getElementById('diplomaScore').textContent} Puntos Estrella ⭐</h4>
+                    
+                    <div class="score-breakdown-horizontal">
+                        ${document.getElementById('scoreBreakdown').innerHTML}
+                    </div>
 
-            html2canvas(element, {
+                    <div class="diploma-footer">
+                        <img src="${originalSealSrcs[0]}" class="seal">
+                        <div style="text-align:center;">
+                            <p style="font-weight:bold; color:#fff; font-size:16px; margin-bottom:5px;">Comando de tareas de 5to Grado</p>
+                            <p style="color:#ccc; font-size:14px;">${document.getElementById('diplomaDate').textContent}</p>
+                        </div>
+                        <img src="${originalSealSrcs.length > 1 ? originalSealSrcs[1] : originalSealSrcs[0]}" class="seal">
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(exportWrapper);
+
+            html2canvas(exportWrapper, {
                 backgroundColor: '#25005e',
                 width: 1000,
                 height: 700,
-                windowWidth: 1000,
-                windowHeight: 700,
                 scale: 2,
                 useCORS: true,
                 allowTaint: true,
                 logging: false,
-                imageTimeout: 0,
-                removeContainer: true
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `diploma-${name.replace(/\s+/g, '_')}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
 
-                // Restaurar todo
-                element.classList.remove('landscape-export');
+                // Limpiar todo
+                document.body.removeChild(exportWrapper);
                 if (photo && originalPhotoSrc) photo.src = originalPhotoSrc;
                 sealImgs.forEach((seal, i) => { seal.src = originalSealSrcs[i]; });
                 if (picker)  picker.style.display  = '';
@@ -227,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 printBtn.disabled = false;
                 printBtn.innerHTML = '<i class="fa-solid fa-download"></i> Descargar Diploma';
             }).catch(() => {
-                element.classList.remove('landscape-export');
+                if (document.body.contains(exportWrapper)) document.body.removeChild(exportWrapper);
                 if (photo && originalPhotoSrc) photo.src = originalPhotoSrc;
                 sealImgs.forEach((seal, i) => { seal.src = originalSealSrcs[i]; });
                 if (picker)  picker.style.display  = '';

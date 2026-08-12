@@ -395,51 +395,100 @@ header {
 }
 
 /* Modo exportación horizontal forzado para html2canvas */
-.landscape-export {
+#exportWrapper {
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
     width: 1000px !important;
-    max-width: 1000px !important;
     height: 700px !important;
     background: #25005e !important;
     background-image: linear-gradient(160deg, #320073 0%, #1a004a 50%, #0a0025 100%) !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 0;
+    margin: 0;
+    z-index: -9999;
 }
 
-.landscape-export .diploma-border {
+#exportWrapper .diploma-border {
     width: 900px;
     height: 600px;
     background: #1e0040 !important; /* Color sólido vibrante para evitar oscurecimiento */
     border: 8px solid #ffcc00 !important;
-    box-shadow: none !important;
+    border-radius: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
 }
 
-.landscape-export h1 {
+#exportWrapper h1 {
     font-size: 3.5rem !important;
     color: #ffcc00 !important;
     text-shadow: 3px 3px 0 #000 !important; /* Sombras simples que html2canvas maneja bien */
+    margin: 10px 0;
 }
 
-.landscape-export .diploma-name {
+#exportWrapper .diploma-name {
     font-size: 4rem !important;
     color: #ffffff !important;
     text-shadow: 3px 3px 0 #000 !important;
+    margin: 10px 0;
 }
 
-.landscape-export .diploma-score {
+#exportWrapper .diploma-score {
     font-size: 2.5rem !important;
     color: #ffcc00 !important;
+    margin: 10px 0;
 }
 
-.landscape-export .score-breakdown {
+#exportWrapper .diploma-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #ffcc00;
+    object-fit: cover;
+    margin: 10px 0;
+}
+
+#exportWrapper .diploma-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 2px solid #ffcc00;
+}
+
+#exportWrapper .seal {
+    width: 80px;
+}
+
+#exportWrapper .score-breakdown-horizontal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
     background: rgba(0, 0, 0, 0.4) !important;
     border: 2px solid #a03cff !important;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+#exportWrapper .score-breakdown-horizontal p {
+    margin: 0;
+    font-size: 16px;
+    color: #fff !important;
+}
+
+#exportWrapper .score-breakdown-horizontal p strong {
+    color: #ffcc00;
+    margin-left: 5px;
 }
 
 .score-breakdown {
